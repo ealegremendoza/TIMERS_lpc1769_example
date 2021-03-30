@@ -17,7 +17,7 @@ void TIMER_LED_Init(void)
 	GPIO_Set(PIN_LED_EXT,1);
 }
 
-#if TESTING == TEST0
+#if TESTING == TEST0 // TIMER0
 void TIMER0_Init(void)
 {
 	PCONP |=1<<1;	// Enciendo el periferico
@@ -67,7 +67,7 @@ void TIMER0_IRQHandler(void)
 	}
 }
 #endif
-#if TESTING == TEST1
+#if TESTING == TEST1 // TIMER0 and TIMER1
 void TIMER0_Init(void)
 {
 	PCONP |=1<<1;	// Enciendo el periferico

@@ -12,12 +12,12 @@
 #define	PIN_LED_RED	0,22	// LED INTEGRADO
 #define	PIN_LED_EXT	0,4		// COLOCAR UN LED EXTERNO
 
-#if TESTING == TEST0
+#if TESTING == TEST0 // TIMER0
 void TIMER_LED_Init(void);
 void TIMER0_Init(void);
 void TIMER0_IRQHandler(void);
 #endif
-#if TESTING == TEST1
+#if TESTING == TEST1 // TIMER0 and TIMER1
 void TIMER_LED_Init(void);
 void TIMER0_Init(void);
 void TIMER0_IRQHandler(void);
