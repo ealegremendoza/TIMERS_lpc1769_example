@@ -45,6 +45,9 @@ typedef struct
 	uint32_t	CCR;
 	uint32_t	CR0;
 	uint32_t	CR1;
+	uint32_t	Reservado0;
+	uint32_t	Reservado1;
+	uint32_t	EMR;	// Agregado para modificar los pines dedicados MATx.y
 
 } timer_t;
 

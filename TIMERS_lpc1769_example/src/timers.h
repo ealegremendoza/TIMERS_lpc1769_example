@@ -25,4 +25,17 @@ void TIMER_LED_Init(void);
 void TIMER1_Init(void);
 void TIMER1_IRQHandler(void);
 #endif
+
+#if TESTING == TEST2 // Modificando el estado de un pin MATx.y con el registro EMR
+
+#define PIN_MAT0_1	1,29
+
+#define EMC_DoNothig	0
+#define EMC_Pin_Low		1
+#define EMC_Pin_High	2
+#define EMC_Pin_Toggle	3
+
+void TIMER0_Init(void);
+void TIMER0_IRQHandler(void);
+#endif
 #endif /* TIMERS_H_ */

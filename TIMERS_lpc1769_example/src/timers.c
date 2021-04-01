@@ -23,7 +23,7 @@ void TIMER0_Init(void)
 	PCONP |=1<<1;	// Enciendo el periferico
 	PCLKSEL0 |=1<<2;	// CCLK -> 100MHz
 	T0PC=CCLK/1000000-1;// Prescaler = 100-1 (cuenta hasta el 0)
-
+	TIMER0.PR=CCLK/1000000-1;// Prescaler = 100-1 (cuenta hasta el 0)
 	/*	MATCH0	*/
 	T0MR0 = (1000000);//MR0= 1000000us (1seg)
 	T0MCR = 0;
@@ -139,5 +139,28 @@ void TIMER1_IRQHandler(void)
 		GPIO_Set(PIN_LED_EXT,!GPIO_Get(PIN_LED_EXT));
 	}
 
+}
+#endif
+#if TESTING == TEST2 // Modificando el estado de un pin MATx.y con el registro EMR
+
+void TIMER0_Init(void)
+{
+	PCONP |=1<<1;	// Enciendo el periferico
+	PCLKSEL0 |=1<<2;	// CCLK -> 100MHz
+	T0TCR = 2;	//RESET TIMER
+	TIMER0.PR=CCLK/1000000-1;// Prescaler = 100-1 (cuenta hasta el 0)
+
+	/*	CONFIGURO EL PIN MAT0.1	*/;
+	GPIO_Func(PIN_MAT0_1,FUNC_FUNC3);
+
+	/*	MATCH1	*/
+	T0MR1 = (1000000);//MR1= 1000000us
+
+	TIMER0.EMR = 0;
+	TIMER0.EMR |= EMC_Pin_Toggle<<6;
+
+	/*	INICIO EL TEMPORIZADOR	*/
+	T0TCR = 0;
+	T0TCR = (1<<0);
 }
 #endif

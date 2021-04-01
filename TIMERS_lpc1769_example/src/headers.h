@@ -26,6 +26,7 @@
 
 #define TEST0	0	// 1 TIMER- T0
 #define TEST1	1	// 2 TIMERS- T0 y T1
-#define TESTING	TEST1
+#define TEST2	2	// Modificando el estado de un pin MATx.y con el registro EMR
+#define TESTING	TEST2
 
 #endif /* HEADERS_H_ */

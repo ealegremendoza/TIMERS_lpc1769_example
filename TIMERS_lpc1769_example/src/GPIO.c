@@ -1,7 +1,7 @@
 /*
  * GPIO.c
  *
- *  Created on: 19 mar. 2021
+ *  Created on: 1 abr. 2021
  *      Author: ealegremendoza
  */
 
@@ -13,7 +13,7 @@ void GPIO_Func(uint32_t Port, uint32_t Pin, uint32_t Function)
 	if(Pin>15)
 	{
 		Temporal++;
-		Pin-=15;
+		Pin-=16;//Pin-=15;//editado
 	}
 	PINSEL[Temporal]&= ~(3<<2*Pin);
 	PINSEL[Temporal]|= (Function<<2*Pin);
@@ -24,7 +24,7 @@ void GPIO_Mode(uint32_t Port,uint32_t Pin, uint32_t Mode)
 	if(Pin>15)
 	{
 		Temporal++;
-		Pin-=15;
+		Pin-=16;//Pin-=15;//editado
 	}
 	PINMODE[Temporal]&= ~(3<<(2*Pin));
 	PINMODE[Temporal]|= (Mode<<(2*Pin));

@@ -23,8 +23,12 @@ void SystemInit(void)
 	TIMER0_Init();
 	TIMER1_Init();
 #endif
-
+#if TESTING == TEST2 // Modificando el estado de un pin MATx.y con el registro EMR
+	TIMER_LED_Init();
+	TIMER0_Init();
+#endif
 }
+
 int main(void)
 {
 	SystemInit();
