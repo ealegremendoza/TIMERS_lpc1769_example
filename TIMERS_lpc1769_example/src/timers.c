@@ -5,6 +5,8 @@
  *      Author: eze
  */
 #include "timers.h"
+uint32_t capture=0;
+
 
 void TIMER_LED_Init(void)
 {
@@ -142,11 +144,16 @@ void TIMER1_IRQHandler(void)
 }
 #endif
 #if TESTING == TEST2 // Modificando el estado de un pin MATx.y con el registro EMR
-
+/*	Nota: Solo los pines MATn.m pueden ser usados con este registro.
+ * 	Sirve para independizar el comportamiento de un pin del sistema.
+ * 	No utiliza interrupciones.	*/
 void TIMER0_Init(void)
 {
+	/*	ALIMENTO EL PERIFERICO */
 	PCONP |=1<<1;	// Enciendo el periferico
 	PCLKSEL0 |=1<<2;	// CCLK -> 100MHz
+
+	/*	RESETEO EL TIMER */
 	T0TCR = 2;	//RESET TIMER
 	TIMER0.PR=CCLK/1000000-1;// Prescaler = 100-1 (cuenta hasta el 0)
 
@@ -154,13 +161,83 @@ void TIMER0_Init(void)
 	GPIO_Func(PIN_MAT0_1,FUNC_FUNC3);
 
 	/*	MATCH1	*/
-	T0MR1 = (1000000);//MR1= 1000000us
+	T0MR1 = (1000000-1);//MR1= 1000000us // resto 1 porque contemplo el cero!
+	T0MCR = 0;
 
+	T0MCR |= (0<<3)|	//	INT ACTIVADA
+			 (1<<4)|	//	RESET ACTIVADO
+			 (0<<5);	//	STOP DESACTIVADO
 	TIMER0.EMR = 0;
 	TIMER0.EMR |= EMC_Pin_Toggle<<6;
-
 	/*	INICIO EL TEMPORIZADOR	*/
 	T0TCR = 0;
 	T0TCR = (1<<0);
 }
 #endif
+
+#if TESTING == TEST3	// usando capture
+void TIMER_Init(void)
+{
+	/*	ALIMENTO EL PERIFERICO */
+	PCONP |=1<<22;	// Enciendo el periferico TIMER2
+	PCLKSEL1 |=1<<12;	// CCLK -> 100MHz para TIMER2
+
+	/*	RESETEO EL TIMER */
+	T2TCR = 2;	//RESET TIMER
+	TIMER2.PR=CCLK/1000000-1;// Prescaler = 100-1 (cuenta hasta el 0)
+
+	/*	CONFIGURO EL PIN CAP0.0
+	 *  El pin CAPn.m es el único que tiene esta funcionalidad 	*/
+	GPIO_Func(PIN_CAP2_0,FUNC_FUNC3);
+
+	T2CCR=0;
+	T2CCR|=(0<<0);	//NO Capturo cuando CAP2.0 tiene un flanco ascendente
+	T2CCR|=(1<<1);	//SI Capturo cuando CAP2.0 tiene un flanco descendente
+	T2CCR|=(1<<2);	//SI Activo la interrupcion
+
+	/*	MATCH0	*/
+	T2MR0 = (500000-1);//MR0= 1000000us	// resto 1 porque contemplo el cero!
+	T2MCR = 0;
+	T2MCR |= (1<<0)|	//	INT ACTIVADA
+			 (0<<1)|	//	RESET DESACTIVADO
+			 (0<<2);	//	STOP DESACTIVADO
+	/*	MATCH1	*/
+	T2MR1 = (3000000-1);//MR0= 1000000us // resto 1 porque contemplo el cero!
+	T2MCR |= (0<<3)|	//	INT DESACTIVADA
+			 (1<<4)|	//	RESET ACTIVADO
+			 (0<<5);	//	STOP DESACTIVADO
+
+	/*	Apago el funcionamiento del EMR por las dudas */
+	TIMER2.EMR = 0;
+	/*	HABILITO INTERRUPCIONES DE LOS MATCH	*/
+	T2IR = 0;
+	T2IR = (1<<0);
+	//T0IR = (1<<0)|(1<<1)|(1<<4);
+
+	/*	INICIO EL TEMPORIZADOR	*/
+	T2TCR = 0;
+	T2TCR = (1<<0);
+
+	/*	HABILITO INTERRUPCION DEL TIMER0 EN EL LPC	*/
+	ISER0 |=1<<3;
+
+}
+
+void TIMER2_IRQHandler(void)
+{
+	uint32_t Temporal = T2IR;
+	if(((Temporal>>0) & 0x01)==0x01)//MR0 interrumpe
+	{
+		T2IR|= 1 <<0 ;	//BORRO EL FLAG
+		GPIO_Set(PIN_LED_EXT,!GPIO_Get(PIN_LED_EXT));
+	}
+	if(((Temporal>>4) & 0x01)==0x01)//CR0 interrumpe
+	{
+		T2IR|= 1 <<4 ;	//BORRO EL FLAG
+		capture=T2CR0;	//leo el valor de TC al momento de la captura
+		printf("cap0! %d\n",capture);
+	}
+}
+
+#endif
+

@@ -27,6 +27,10 @@ void SystemInit(void)
 	TIMER_LED_Init();
 	TIMER0_Init();
 #endif
+#if TESTING == TEST3
+	TIMER_LED_Init();
+	TIMER_Init();
+#endif
 }
 
 int main(void)
