@@ -23,7 +23,10 @@ El ejemplo hace alternar los estados de los LEDs embebidos en la placa LPCXpress
 ### TIMERx - REGISTROS
 ![lpc1769_Timer_Regs](img/TIMER_Regs.png "LPC1769 TIMERS REGISTERS")
 ![lpc1769_Timer_Regs1](img/TIMER_Regs_1.png "LPC1769 TIMERS REGISTERS")
+![lpc1769_Timer_Regs2](img/EMR_register.png "LPC1769 TIMERS REGISTERS")
 
+![lpc1769_Timer_Regs3](img/TCTCR_register.png "LPC1769 TIMERS REGISTERS")
+![lpc1769_Timer_Regs4](img/TCCR_register.png "LPC1769 TIMERS REGISTERS")
 ---
 Espero le sea de útilidad.
 
