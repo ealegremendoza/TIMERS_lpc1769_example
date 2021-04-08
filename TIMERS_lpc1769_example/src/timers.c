@@ -19,22 +19,40 @@ void TIMER_LED_Init(void)
 	GPIO_Set(PIN_LED_EXT,1);
 }
 
-#if TESTING == TEST0 // TIMER0
+void TIMER_Init(void)
+{
+#if TESTING == TEST0 // TIMER0 - Ejemplo de uso de Match0 y Match1
+	TIMER0_Init();
+#endif
+#if TESTING == TEST1 // TIMER0 y TIMER1 - Ejemplo usando los M0 de cada timer.
+	TIMER0_Init();
+	TIMER1_Init();
+#endif
+#if TESTING == TEST2 // TIMER0- Modificando el estado de un pin MATx.y con el registro EMR
+	TIMER0_Init();
+#endif
+#if TESTING == TEST3 // TIMER2- Ejemplo de uso de la funcion CAPTURE
+	TIMER2_Init();
+#endif
+
+}
+
+
+#if TESTING == TEST0 // TIMER0 - Ejemplo de uso de Match0 y Match1
 void TIMER0_Init(void)
 {
-	PCONP |=1<<1;	// Enciendo el periferico
+	PCONP |=1<<1;		// Enciendo el periferico
 	PCLKSEL0 |=1<<2;	// CCLK -> 100MHz
-	T0PC=CCLK/1000000-1;// Prescaler = 100-1 (cuenta hasta el 0)
 	TIMER0.PR=CCLK/1000000-1;// Prescaler = 100-1 (cuenta hasta el 0)
 	/*	MATCH0	*/
-	T0MR0 = (1000000);//MR0= 1000000us (1seg)
+	T0MR0 = (1000000-1);//MR0= 1000000us (1seg)
 	T0MCR = 0;
 	T0MCR |= (1<<0)|	//	INT ACTIVADA
 			 (0<<1)|	//	RESET DESACTIVADO
 			 (0<<2);	//	STOP DESACTIVADO
 
 	/*	MATCH1	*/
-	T0MR1 = (2000000);//MR0= 1000000us
+	T0MR1 = (2000000-1);//MR1= 1000000us
 	T0MCR |= (1<<3)|	//	INT ACTIVADA
 			 (1<<4)|	//	RESET ACTIVADO
 			 (0<<5);	//	STOP DESACTIVADO
@@ -49,7 +67,6 @@ void TIMER0_Init(void)
 
 	/*	HABILITO INTERRUPCION DEL TIMER0 EN EL LPC	*/
 	ISER0 |=1<<1;
-
 }
 
 void TIMER0_IRQHandler(void)
@@ -69,7 +86,7 @@ void TIMER0_IRQHandler(void)
 	}
 }
 #endif
-#if TESTING == TEST1 // TIMER0 and TIMER1
+#if TESTING == TEST1 // TIMER0 y TIMER1 - Ejemplo usando los M0 de cada timer.
 void TIMER0_Init(void)
 {
 	PCONP |=1<<1;	// Enciendo el periferico
@@ -77,10 +94,10 @@ void TIMER0_Init(void)
 	TIMER0.PR=CCLK/1000000-1;// Prescaler = 100-1 (cuenta hasta el 0)
 
 	/*	MATCH0	*/
-	T0MR0 = (1000000);//MR0= 1000000us (1seg)
+	T0MR0 = (1000000-1);//MR0= 1000000us (1seg)
 	T0MCR = 0;
 	T0MCR |= (1<<0)|	//	INT ACTIVADA
-			 (1<<1)|	//	RESET DESACTIVADO
+			 (1<<1)|	//	RESET ACTIVADO
 			 (0<<2);	//	STOP DESACTIVADO
 
 
@@ -110,10 +127,9 @@ void TIMER1_Init(void)
 {
 	PCONP |=1<<2;	// Enciendo el periferico
 	PCLKSEL0 |=1<<4;	// CCLK -> 100MHz
-	//T1PC=CCLK/1000000-1;// Prescaler = 100-1 (cuenta hasta el 0)
 	TIMER1.PR=CCLK/1000000-1;// Prescaler = 100-1 (cuenta hasta el 0)
 	/*	MATCH0	*/
-	T1MR0 = (1000000);//MR0= 1000000us (1seg)
+	T1MR0 = (1000000-1);//MR0= 1000000us (1seg)
 	T1MCR = 0;
 	T1MCR |= (1<<0)|	//	INT ACTIVADA
 			 (1<<1)|	//	RESET ACTIVADO
@@ -143,9 +159,9 @@ void TIMER1_IRQHandler(void)
 
 }
 #endif
-#if TESTING == TEST2 // Modificando el estado de un pin MATx.y con el registro EMR
+#if TESTING == TEST2 // TIMER0- Modificando el estado de un pin MATx.y con el registro EMR
 /*	Nota: Solo los pines MATn.m pueden ser usados con este registro.
- * 	Sirve para independizar el comportamiento de un pin del sistema.
+ * 	Sirve para independizar el comportamiento de un pin del resto del sistema.
  * 	No utiliza interrupciones.	*/
 void TIMER0_Init(void)
 {
@@ -161,22 +177,31 @@ void TIMER0_Init(void)
 	GPIO_Func(PIN_MAT0_1,FUNC_FUNC3);
 
 	/*	MATCH1	*/
+	// Uso Match 1 porque es el que se corresponde con el pin configurado arriba.
 	T0MR1 = (1000000-1);//MR1= 1000000us // resto 1 porque contemplo el cero!
 	T0MCR = 0;
 
 	T0MCR |= (0<<3)|	//	INT ACTIVADA
 			 (1<<4)|	//	RESET ACTIVADO
 			 (0<<5);	//	STOP DESACTIVADO
+
+	/* EMR Funciones
+	 * DoNothig		0
+	 * Pin_Low		1
+	 * Pin_High		2
+	 * Pin_Toggle	3
+	 * */
 	TIMER0.EMR = 0;
-	TIMER0.EMR |= EMC_Pin_Toggle<<6;
+	TIMER0.EMR |= 3<<6;
 	/*	INICIO EL TEMPORIZADOR	*/
 	T0TCR = 0;
 	T0TCR = (1<<0);
+	/*	NOTAR QUE NO SE USAN INTERRUPCIONES !	*/
 }
 #endif
 
-#if TESTING == TEST3	// usando capture
-void TIMER_Init(void)
+#if TESTING == TEST3	// TIMER2- Ejemplo de uso de la funcion CAPTURE
+void TIMER2_Init(void)
 {
 	/*	ALIMENTO EL PERIFERICO */
 	PCONP |=1<<22;	// Enciendo el periferico TIMER2

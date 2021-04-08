@@ -24,10 +24,10 @@
 #define DEBUGOUT(a);  printf(a);
 #endif
 
-#define TEST0	0	// 1 TIMER- T0
-#define TEST1	1	// 2 TIMERS- T0 y T1
+#define TEST0	0	// TIMER0 - Ejemplo de uso de Match0 y Match1
+#define TEST1	1	// TIMER0 y TIMER1 - Ejemplo usando los M0 de cada timer.
 #define TEST2	2	// Modificando el estado de un pin MATx.y con el registro EMR
-#define TEST3	3	// Capture
+#define TEST3	3	// TIMER2- Ejemplo de uso de la funcion CAPTURE
 #define TESTING	TEST3
 
 #endif /* HEADERS_H_ */
